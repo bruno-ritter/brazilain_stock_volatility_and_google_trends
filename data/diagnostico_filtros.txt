@@ -1,0 +1,138 @@
+
+════════════════════════════════════════════════════════════
+  1. Singular matrix removido (sem filtro zeros)
+════════════════════════════════════════════════════════════
+  Tickers em df_previsoes              : 323
+  Com erro (singular matrix)           : 29
+  Na comparação final                   : 294
+  Obs. OOS usadas / descartadas        : 29070 / 1212
+
+  QLIKE médio:
+    M0 (RW)        : 38.981838
+    M1 (GARCH)     : 0.794214
+    M2 (GARCH-X)   : 0.798090
+
+  MCS (α=10%):
+              p_valor  no_conjunto
+Model name                        
+M1 (GARCH)      1.000         True
+M2 (GARCH-X)    0.342         True
+M0 (RW)         0.008        False
+
+  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
+  Excluídos             : ['M0 (RW)']
+
+  γ (ΔSVI) significativo em ≥50% das janelas:
+    62/294 tickers
+
+  Top 5 por % de janelas significativas:
+ticker_b3
+BGIP4    100.0
+ESTR4    100.0
+MWET4    100.0
+BMGB4    100.0
+OSXB3    100.0
+
+════════════════════════════════════════════════════════════
+  2. Filtro ≥70% + singular matrix removido
+════════════════════════════════════════════════════════════
+  Tickers em df_previsoes              : 323
+  Com erro (singular matrix)           : 29
+  Após filtro zeros ≥70%              : 210  (1 com erro)
+  Na comparação final                   : 209
+  Obs. OOS usadas / descartadas        : 21479 / 48
+
+  QLIKE médio:
+    M0 (RW)        : 1.830045
+    M1 (GARCH)     : 0.673185
+    M2 (GARCH-X)   : 0.673523
+
+  MCS (α=10%):
+              p_valor  no_conjunto
+Model name                        
+M1 (GARCH)      1.000         True
+M2 (GARCH-X)    0.929         True
+M0 (RW)         0.000        False
+
+  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
+  Excluídos             : ['M0 (RW)']
+
+  γ (ΔSVI) significativo em ≥50% das janelas:
+    38/209 tickers
+
+  Top 5 por % de janelas significativas:
+ticker_b3
+BMGB4    100.000000
+CSMG3     99.029126
+GFSA3     99.029126
+COGN3     99.029126
+SANB4     99.029126
+
+════════════════════════════════════════════════════════════
+  3. Filtro ≥50% + singular matrix removido
+════════════════════════════════════════════════════════════
+  Tickers em df_previsoes              : 323
+  Com erro (singular matrix)           : 29
+  Após filtro zeros ≥50%              : 185  (0 com erro)
+  Na comparação final                   : 185
+  Obs. OOS usadas / descartadas        : 19007 / 48
+
+  QLIKE médio:
+    M0 (RW)        : 1.790235
+    M1 (GARCH)     : 0.678619
+    M2 (GARCH-X)   : 0.678336
+
+  MCS (α=10%):
+              p_valor  no_conjunto
+Model name                        
+M2 (GARCH-X)    1.000         True
+M1 (GARCH)      0.956         True
+M0 (RW)         0.000        False
+
+  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
+  Excluídos             : ['M0 (RW)']
+
+  γ (ΔSVI) significativo em ≥50% das janelas:
+    34/185 tickers
+
+  Top 5 por % de janelas significativas:
+ticker_b3
+BMGB4    100.000000
+COGN3     99.029126
+CSMG3     99.029126
+SANB4     99.029126
+GFSA3     99.029126
+
+════════════════════════════════════════════════════════════
+  4. Sem filtro (NaN via .dropna())
+════════════════════════════════════════════════════════════
+  Tickers em df_previsoes              : 323
+  Com erro (singular matrix)           : 29
+  Na comparação final                   : 323
+  Obs. OOS usadas / descartadas        : 30109 / 3160
+
+  QLIKE médio:
+    M0 (RW)        : 44.526646
+    M1 (GARCH)     : 0.820221
+    M2 (GARCH-X)   : 0.823963
+
+  MCS (α=10%):
+              p_valor  no_conjunto
+Model name                        
+M1 (GARCH)      1.000         True
+M2 (GARCH-X)    0.324         True
+M0 (RW)         0.005        False
+
+  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
+  Excluídos             : ['M0 (RW)']
+
+  γ (ΔSVI) significativo em ≥50% das janelas:
+    65/323 tickers
+
+  Top 5 por % de janelas significativas:
+ticker_b3
+BMGB4    100.0
+BGIP4    100.0
+ESTR4    100.0
+OSXB3    100.0
+MWET4    100.0
