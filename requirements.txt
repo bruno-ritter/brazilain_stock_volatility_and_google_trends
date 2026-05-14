@@ -3,6 +3,7 @@ pandas
 pytrends
 tqdm
 arch
+gjr-garch-x
 statsmodels
 matplotlib
 seaborn

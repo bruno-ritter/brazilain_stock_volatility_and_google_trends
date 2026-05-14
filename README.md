@@ -26,9 +26,14 @@ O SVI é o índice semanal normalizado (0–100) do Google Trends para o termo d
 |---|--------|----------------------------------|
 | M0 | Random Walk | $\hat{\sigma}^2_t = RV_{t-1}$ |
 | M1 | GARCH(1,1) | $\sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \beta\,\sigma^2_{t-1}$ |
-| M2 | GARCH-X(1,1) | $\sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \beta\,\sigma^2_{t-1} + \gamma\,\Delta\text{SVI}_{t-1}$ |
+| M3 | GJR-GARCH(1,1) | $\sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \gamma_{GJR}\,\varepsilon^2_{t-1}\,\mathbb{I}(\varepsilon_{t-1}<0) + \beta\,\sigma^2_{t-1}$ |
+| M2 | GJR-GARCH-X(1,1) | $\sigma^2_t = \omega + \alpha\,\varepsilon^2_{t-1} + \gamma_{GJR}\,\varepsilon^2_{t-1}\,\mathbb{I}(\varepsilon_{t-1}<0) + \beta\,\sigma^2_{t-1} + \delta\,\Delta\text{SVI}_{t-1}$ |
 
-M0 é o benchmark ingênuo. M1 é o modelo padrão de volatilidade condicional. M2 estende M1 com o SVI como variável exógena — o coeficiente γ captura se o interesse de busca antecipa volatilidade futura.
+M0 é o benchmark ingênuo. M1 é o modelo padrão de volatilidade condicional. M3 adiciona o **efeito de assimetria (GJR)**: choques negativos podem impactar a volatilidade mais que choques positivos do mesmo módulo. M2 estende M3 com o **SVI na equação da variância** — o coeficiente $\delta$ captura se o interesse de busca eleva a volatilidade futura.
+
+Todos os modelos GARCH (M1, M2, M3) usam **inovações Student-t** — escolha imposta pela biblioteca `gjr-garch-x` (única que estima exógenos na equação da variância) e replicada no M1 por consistência distribucional.
+
+**Decomposição do efeito do SVI:** a comparação **M3 vs M2** isola o ganho **puro** do SVI condicional à assimetria já modelada; **M1 vs M3** isola o ganho da assimetria; **M1 vs M2** mede o efeito conjunto. Sem o M3 não seria possível atribuir corretamente as melhorias do M2 sobre o M1.
 
 ---
 
@@ -41,6 +46,12 @@ Os modelos são estimados e avaliados **fora da amostra** (*out-of-sample*) por 
 - **Procedimento:** a cada semana *t*, estima-se o modelo nas 156 observações anteriores e gera-se uma previsão para *t*; a janela avança uma semana e repete-se o processo
 
 Isso evita *look-ahead bias* e reproduz o ambiente real de previsão.
+
+**Implementação:**
+- **M1** é estimado via `arch.arch_model` com `vol="GARCH"`, `dist="t"` e `mean="Constant"`. O forecast 1-passo usa `fit.forecast(horizon=1)`.
+- **M2 e M3** são estimados via [`gjr-garch-x`](https://github.com/studiofarzulla/gjr-garch-x), única biblioteca Python que aceita regressores na equação da variância. M3 chama `estimate_gjr_garch_x(returns, None)` (sem exógeno); M2 chama com `exog_vars=pd.DataFrame({"svi_diff": svi_diff.shift(1)})` — o **shift(1)** garante que o que entra na variância no tempo *t* é $\Delta\text{SVI}_{t-1}$, evitando look-ahead.
+- A biblioteca `gjr-garch-x` **não tem método `.forecast()`**. A previsão 1-passo é calculada manualmente pela equação fechada: $\hat{\sigma}^2_t = \omega + \alpha\hat{\varepsilon}^2_{t-1} + \gamma_{GJR}\hat{\varepsilon}^2_{t-1}\mathbb{I}(\hat{\varepsilon}_{t-1}<0) + \beta\hat{\sigma}^2_{t-1} + \delta\,\Delta\text{SVI}_{t-1}$, usando os parâmetros estimados na janela e os últimos valores de resíduo e variância condicional (`res.residuals.iloc[-1]`, `res.volatility.iloc[-1]**2`).
+- Retornos são multiplicados por 100 antes da estimação (estabilidade numérica) e a previsão de variância é dividida por 10.000 antes de gravar no CSV.
 
 ---
 
@@ -56,7 +67,7 @@ QLIKE é assimétrica e penaliza mais fortemente previsões subestimadas, sendo 
 
 ### Inferência Formal — Model Confidence Set (MCS)
 
-A comparação entre os três modelos é feita pelo **Model Confidence Set** de Hansen, Lunde & Nason (2011), implementado via `arch.bootstrap.MCS`. O MCS é um teste de hipótese sequencial que, a partir de um conjunto inicial de modelos, elimina iterativamente o pior modelo enquanto ele for significativamente inferior aos demais (α = 10%). O conjunto final contém todos os modelos que *não podem ser rejeitados* como igualmente bons ao melhor.
+A comparação entre os quatro modelos é feita pelo **Model Confidence Set** de Hansen, Lunde & Nason (2011), implementado via `arch.bootstrap.MCS`. O MCS é um teste de hipótese sequencial que, a partir de um conjunto inicial de modelos, elimina iterativamente o pior modelo enquanto ele for significativamente inferior aos demais (α = 10%). O conjunto final contém todos os modelos que *não podem ser rejeitados* como igualmente bons ao melhor.
 
 Resultado salvo em `data/mcs_resultado.csv`.
 
@@ -98,8 +109,8 @@ A análise principal usa o limiar de **≥ 50% de zeros** como critério de eleg
     ├── log_coleta_svi.csv           # Log da coleta do Google Trends
     ├── log_adf_svi.csv              # Resultados do teste ADF por ticker
     ├── base_final_tcc.csv           # Base combinada (preços + SVI), usada na modelagem
-    ├── previsoes_consolidadas.csv   # Previsões out-of-sample dos três modelos
-    ├── resumo_parametros.csv        # Parâmetros médios por ticker (α, β, γ, p-valor)
+    ├── previsoes_consolidadas.csv   # Previsões out-of-sample dos 4 modelos (M0, M1, M2, M3) + parâmetros estimados por janela
+    ├── resumo_parametros.csv        # Parâmetros médios por ticker (α, β, γ_GJR, δ_SVI, p-valores, persistência)
     ├── qlike_por_ticker.csv         # QLIKE médio por ticker e modelo
     ├── mcs_resultado.csv            # Resultado do Model Confidence Set
     └── diagnostico_filtros.txt      # Comparação das quatro estratégias de filtro
@@ -124,7 +135,7 @@ jupyter notebook
 | Notebook | O que faz | Tempo estimado |
 |----------|-----------|----------------|
 | `01_coleta_dados.ipynb` | Coleta preços (Yahoo Finance), calcula RV, coleta SVI (Google Trends), testa ADF, salva CSVs | ~1h (rate limit do Google Trends) |
-| `02_modelos.ipynb` | Estima M0/M1/M2 em janela móvel, calcula QLIKE, roda MCS, compara estratégias de filtro | ~30min |
+| `02_modelos.ipynb` | Estima M0/M1/M2/M3 em janela móvel, calcula QLIKE, roda MCS, compara estratégias de filtro | ~1–2h (M2 e M3 usam otimizador SLSQP da `scipy`, mais lento que `arch`) |
 | `03_analise_resultados.ipynb` | Análise exploratória dos resultados (filtro ≥50%) | instantâneo |
 
 > **Atalho:** os dados já estão em `data/`. Para pular a coleta, basta executar a seção **"Bases salvas"** do `02_modelos.ipynb` diretamente.
@@ -148,7 +159,8 @@ jupyter notebook
 ## Dependências
 
 ```
-arch          # estimação GARCH/GARCH-X e Model Confidence Set
+arch          # estimação GARCH (M1) e Model Confidence Set
+gjr-garch-x   # estimação GJR-GARCH com exógeno na variância (M2, M3)
 statsmodels   # teste ADF de estacionariedade
 pytrends      # coleta do Google Trends
 yfinance      # dados financeiros do Yahoo Finance
@@ -166,3 +178,4 @@ tqdm
 - Hansen, P. R., Lunde, A., & Nason, J. M. (2011). The model confidence set. *Econometrica*, 79(2), 453–497.
 - Patton, A. J. (2011). Volatility forecast comparison using imperfect volatility proxies. *Journal of Econometrics*, 160(1), 246–256.
 - Bollerslev, T. (1986). Generalized autoregressive conditional heteroskedasticity. *Journal of Econometrics*, 31(3), 307–327.
+- Glosten, L. R., Jagannathan, R., & Runkle, D. E. (1993). On the relation between the expected value and the volatility of the nominal excess return on stocks. *Journal of Finance*, 48(5), 1779–1801.
