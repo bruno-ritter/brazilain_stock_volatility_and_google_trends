@@ -3,136 +3,136 @@
   1. Singular matrix removido (sem filtro zeros)
 ════════════════════════════════════════════════════════════
   Tickers em df_previsoes              : 323
-  Com erro (singular matrix)           : 29
-  Na comparação final                   : 294
-  Obs. OOS usadas / descartadas        : 29070 / 1212
+  Com erro (singular matrix)           : 13
+  Na comparação final                   : 310
+  Obs. OOS usadas / descartadas        : 29473 / 2457
 
   QLIKE médio:
-    M0 (RW)        : 38.981838
-    M1 (GARCH)     : 0.794214
-    M2 (GARCH-X)   : 0.798090
+    M0 (RW)        : 62.792149
+    M1 (GARCH)     : 0.821415
+    M2 (GARCH-X)   : 0.836887
 
   MCS (α=10%):
               p_valor  no_conjunto
 Model name                        
-M1 (GARCH)      1.000         True
-M2 (GARCH-X)    0.342         True
-M0 (RW)         0.008        False
+M1 (GARCH)       1.00         True
+M2 (GARCH-X)     0.01        False
+M0 (RW)          0.01        False
 
-  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
-  Excluídos             : ['M0 (RW)']
+  Conjunto de confiança : ['M1 (GARCH)']
+  Excluídos             : ['M0 (RW)', 'M2 (GARCH-X)']
 
   γ (ΔSVI) significativo em ≥50% das janelas:
-    62/294 tickers
+    27/310 tickers
 
   Top 5 por % de janelas significativas:
 ticker_b3
-BGIP4    100.0
-ESTR4    100.0
-MWET4    100.0
-BMGB4    100.0
-OSXB3    100.0
+ALUP3    95.1456
+PATI4    90.9091
+PINE4    90.2913
+JFEN3    89.3204
+CPLE3    83.4951
 
 ════════════════════════════════════════════════════════════
   2. Filtro ≥70% + singular matrix removido
 ════════════════════════════════════════════════════════════
   Tickers em df_previsoes              : 323
-  Com erro (singular matrix)           : 29
-  Após filtro zeros ≥70%              : 210  (1 com erro)
-  Na comparação final                   : 209
-  Obs. OOS usadas / descartadas        : 21479 / 48
+  Com erro (singular matrix)           : 13
+  Após filtro zeros ≥70%              : 210  (8 com erro)
+  Na comparação final                   : 202
+  Obs. OOS usadas / descartadas        : 20760 / 46
 
   QLIKE médio:
-    M0 (RW)        : 1.830045
-    M1 (GARCH)     : 0.673185
-    M2 (GARCH-X)   : 0.673523
+    M0 (RW)        : 1.805815
+    M1 (GARCH)     : 0.644900
+    M2 (GARCH-X)   : 0.662964
 
   MCS (α=10%):
               p_valor  no_conjunto
 Model name                        
 M1 (GARCH)      1.000         True
-M2 (GARCH-X)    0.929         True
+M2 (GARCH-X)    0.003        False
 M0 (RW)         0.000        False
 
-  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
-  Excluídos             : ['M0 (RW)']
+  Conjunto de confiança : ['M1 (GARCH)']
+  Excluídos             : ['M0 (RW)', 'M2 (GARCH-X)']
 
   γ (ΔSVI) significativo em ≥50% das janelas:
-    38/209 tickers
+    21/202 tickers
 
   Top 5 por % de janelas significativas:
 ticker_b3
-BMGB4    100.000000
-CSMG3     99.029126
-GFSA3     99.029126
-COGN3     99.029126
-SANB4     99.029126
+ALUP3     95.1456
+PINE4     90.2913
+JFEN3     89.3204
+CPLE3     83.4951
+SAPR11    81.5534
 
 ════════════════════════════════════════════════════════════
   3. Filtro ≥50% + singular matrix removido
 ════════════════════════════════════════════════════════════
   Tickers em df_previsoes              : 323
-  Com erro (singular matrix)           : 29
-  Após filtro zeros ≥50%              : 185  (0 com erro)
-  Na comparação final                   : 185
-  Obs. OOS usadas / descartadas        : 19007 / 48
+  Com erro (singular matrix)           : 13
+  Após filtro zeros ≥50%              : 185  (8 com erro)
+  Na comparação final                   : 177
+  Obs. OOS usadas / descartadas        : 18185 / 46
 
   QLIKE médio:
-    M0 (RW)        : 1.790235
-    M1 (GARCH)     : 0.678619
-    M2 (GARCH-X)   : 0.678336
-
-  MCS (α=10%):
-              p_valor  no_conjunto
-Model name                        
-M2 (GARCH-X)    1.000         True
-M1 (GARCH)      0.956         True
-M0 (RW)         0.000        False
-
-  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
-  Excluídos             : ['M0 (RW)']
-
-  γ (ΔSVI) significativo em ≥50% das janelas:
-    34/185 tickers
-
-  Top 5 por % de janelas significativas:
-ticker_b3
-BMGB4    100.000000
-COGN3     99.029126
-CSMG3     99.029126
-SANB4     99.029126
-GFSA3     99.029126
-
-════════════════════════════════════════════════════════════
-  4. Sem filtro (NaN via .dropna())
-════════════════════════════════════════════════════════════
-  Tickers em df_previsoes              : 323
-  Com erro (singular matrix)           : 29
-  Na comparação final                   : 323
-  Obs. OOS usadas / descartadas        : 30109 / 3160
-
-  QLIKE médio:
-    M0 (RW)        : 44.526646
-    M1 (GARCH)     : 0.820221
-    M2 (GARCH-X)   : 0.823963
+    M0 (RW)        : 1.761324
+    M1 (GARCH)     : 0.646316
+    M2 (GARCH-X)   : 0.663498
 
   MCS (α=10%):
               p_valor  no_conjunto
 Model name                        
 M1 (GARCH)      1.000         True
-M2 (GARCH-X)    0.324         True
-M0 (RW)         0.005        False
+M2 (GARCH-X)    0.006        False
+M0 (RW)         0.000        False
 
-  Conjunto de confiança : ['M1 (GARCH)', 'M2 (GARCH-X)']
-  Excluídos             : ['M0 (RW)']
+  Conjunto de confiança : ['M1 (GARCH)']
+  Excluídos             : ['M0 (RW)', 'M2 (GARCH-X)']
 
   γ (ΔSVI) significativo em ≥50% das janelas:
-    65/323 tickers
+    18/177 tickers
 
   Top 5 por % de janelas significativas:
 ticker_b3
-BMGB4    100.0
-BGIP4    100.0
-ESTR4    100.0
-OSXB3    100.0
-MWET4    100.0
+PINE4     90.2913
+CPLE3     83.4951
+SAPR11    81.5534
+DASA3     79.6117
+WEGE3     78.6408
+
+════════════════════════════════════════════════════════════
+  4. Sem filtro (NaN via .dropna())
+════════════════════════════════════════════════════════════
+  Tickers em df_previsoes              : 323
+  Com erro (singular matrix)           : 13
+  Na comparação final                   : 323
+  Obs. OOS usadas / descartadas        : 30787 / 2482
+
+  QLIKE médio:
+    M0 (RW)        : 60.239150
+    M1 (GARCH)     : 0.832289
+    M2 (GARCH-X)   : 58.949527
+
+  MCS (α=10%):
+              p_valor  no_conjunto
+Model name                        
+M1 (GARCH)      1.000         True
+M2 (GARCH-X)    0.082        False
+M0 (RW)         0.025        False
+
+  Conjunto de confiança : ['M1 (GARCH)']
+  Excluídos             : ['M0 (RW)', 'M2 (GARCH-X)']
+
+  γ (ΔSVI) significativo em ≥50% das janelas:
+    34/323 tickers
+
+  Top 5 por % de janelas significativas:
+ticker_b3
+AZEV4    98.0583
+ALUP3    95.1456
+CEDO4    91.2621
+PATI4    90.9091
+PINE4    90.2913
