@@ -1,4 +1,5 @@
 Model name,p_valor,no_conjunto
 M1 (GARCH),1.0,True
-M2 (GARCH-X),0.006,False
-M0 (RW),0.0,False
+M3 (GARCH-X log-dev),0.182,True
+M2 (GARCH-X ΔSVI),0.026,False
+M0 (RW),0.026,False
